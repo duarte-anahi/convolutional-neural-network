@@ -1,38 +1,46 @@
-# Animal Image Classifier (CNN)
+# Convolutional model: design, training and diagnosis
 
 **English** · [Español](README.es.md)
 
-A convolutional neural network built with Keras to classify images into 8 animal categories: birds, capybaras, elephants, cats, monkeys, meerkats, dogs and toads.
+A convolutional neural network built with Keras over an image dataset of 8 classes. The point of the project is not the accuracy but the **diagnosis**: why the model does not generalize, and why shrinking it did not help.
 
-The main result of the project is not the accuracy itself but the **diagnosis**: why the model fails to generalize, and why making it smaller did not fix it.
+![Training curves: both versions](docs/comparison.png)
 
-![Training curves V1 vs V2](docs/comparison.png)
+## Architecture
 
-## What's inside
+| Block | Filters | Output |
+|---|---|---|
+| 1 | 32 | 100×100×32 |
+| 2 | 64 | 50×50×64 |
+| 3 | 128 | 25×25×128 |
+| 4 | 128 | 12×12×128 |
 
-1. **Data preparation** — 1,567 images split 80/20 (1,254 for training, 313 for validation), resized to 200×200 px.
-2. **Model V1** — four Conv2D + MaxPooling2D blocks with increasing filters (32 → 64 → 128 → 128), ~2.6M parameters.
-3. **Overfitting analysis** — training and validation curves across 15 epochs.
-4. **Prediction test** — softmax output on an image of Tom (from *Tom and Jerry*).
-5. **Model V2** — constant 32 filters per block, ~619K parameters (75% fewer).
-6. **Comparison** — both architectures side by side.
+Four `Conv2D` + `MaxPooling2D` blocks, then `Flatten`, a 128-unit dense layer and an 8-way softmax: **~2.6M parameters**. Trained with Adam and `sparse_categorical_crossentropy` for 15 epochs.
 
-## Results
+**Data:** 1,567 images resized to 200×200, split 80/20 (1,254 training, 313 validation).
+
+## The experiment
+
+A second version keeps **32 filters in every block** — ~619K parameters, 75% fewer — to test whether the overfitting came from excess capacity.
 
 | Model | Parameters | Train accuracy | Validation accuracy | Validation loss |
 |---|---|---|---|---|
-| V1 | ~2.6M | 0.992 | 0.597 | 2.63 |
-| V2 | ~619K | 0.994 | 0.585 | 2.57 |
+| V1 · growing filters | ~2.6M | 0.992 | 0.597 | 2.63 |
+| V2 · constant filters | ~619K | 0.994 | 0.585 | 2.57 |
 
-The prediction test makes the problem visible: the cartoon cat was classified as a **bird with 70% confidence** ("cat" got 0%).
+## Diagnosis
 
-**Conclusion:** both models memorize the training set (~99%) while validation accuracy plateaus around 59%, and validation loss rises after epoch 6 — a classic overfitting pattern. Reducing parameters by 75% did not improve generalization, which points to the **dataset** (size and variety) as the bottleneck rather than the architecture.
+Both versions memorize the training set (~99%) while validation accuracy stalls near 59%, and validation loss starts climbing at epoch 6 while training loss keeps falling — the textbook shape of overfitting.
+
+Cutting 75% of the parameters changed nothing, so the bottleneck is the **dataset** (size and variety), not the architecture.
+
+**What this project taught me:** when the validation loss rises while the training loss falls, the answer is not another layer — it is more and better data.
 
 **Next steps:** data augmentation and transfer learning from a pretrained model.
 
 ## Running it
 
-The notebook is designed for **Google Colab**. The dataset is hosted on Google Drive — section 0 of the notebook explains how to add it to your Drive before running.
+The notebook is written for **Google Colab**. The dataset lives in Google Drive; section 0 of the notebook explains how to add it to your own Drive before running.
 
 ## Tech stack
 
