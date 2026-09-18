@@ -1,4 +1,6 @@
-# Convolutional model: design, training and diagnosis
+# Convolutional Neural Network (CNN)
+
+Design, training and diagnosis of a CNN built with Keras.
 
 **English** · [Español](README.es.md)
 

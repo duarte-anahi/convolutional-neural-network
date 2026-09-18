@@ -1,4 +1,6 @@
-# Modelo convolucional: diseño, entrenamiento y diagnóstico
+# Convolutional Neural Network (CNN)
+
+Diseño, entrenamiento y diagnóstico de una red neuronal convolucional construida con Keras.
 
 [English](README.md) · **Español**
 
